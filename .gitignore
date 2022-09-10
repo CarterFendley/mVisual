@@ -1,0 +1,5 @@
+# Local node packages
+node_modules
+
+# TypeScript builds
+dist
