@@ -1,5 +1,5 @@
 
-import { app, BrowserWindow, session } from "electron";
+import { app, BrowserWindow } from "electron";
 import * as path from "path";
 
 function createWindow() {
@@ -32,18 +32,6 @@ app.on("ready", () => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
-
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        'Content-Security-Policy': [
-          'script-src \'self\' \'unsafe-eval\'',
-          'object-src \'self\''
-        ]
-      }
-    })
-  })
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
