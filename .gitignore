@@ -3,3 +3,13 @@ node_modules
 
 # TypeScript builds
 dist
+
+# Rust
+target
+Cargo.lock
+
+# Wasm builds
+pkg
+
+# Apple I will fight you
+.DS_Store

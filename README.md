@@ -2,7 +2,13 @@
 
 ## Setup
 
-After [installing yarn](https://yarnpkg.com/getting-started/install), install this project and its dependencies.
+First step is to [install rust](https://www.rust-lang.org/) and to install the webassembly target with the command below.
+
+```
+rustup target add wasm32-unknown-unknown
+```
+
+Then you can [install yarn](https://yarnpkg.com/getting-started/install) and this project and its dependencies.
 
 ```
 yarn
