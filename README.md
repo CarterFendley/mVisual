@@ -20,6 +20,11 @@ Then launch the electron.
 yarn start
 ```
 
+## Helpful references
+
+- [WebGlRenderingContext docs](https://rustwasm.github.io/wasm-bindgen/api/web_sys/struct.WebGlRenderingContext.html#)
+- [nalgebra 0.18.0 docs](https://docs.rs/nalgebra/0.18.0/nalgebra/index.html)
+
 ## Notes current package setup
 
 ### Electron

@@ -1,5 +1,6 @@
 use super::super::util::math;
 use super::super::util::webgl;
+use super::super::util::constants::GRID_SIZE;
 use super::common::Program;
 use js_sys::WebAssembly;
 use wasm_bindgen::JsCast;
@@ -24,7 +25,7 @@ impl Graph3D {
         )
         .unwrap();
 
-        let positions_and_indices = math::get_position_grid_n_by_n(10);
+        let positions_and_indices = math::get_position_grid_n_by_n(GRID_SIZE);
 
         // Bind data so webGL can use it
         let memory_buffer = wasm_bindgen::memory()
@@ -102,6 +103,7 @@ impl Program for Graph3D {
         gl.vertex_attrib_pointer_with_i32(0, 3, GL::FLOAT, false, 0, 0);
         gl.enable_vertex_attrib_array(0);
 
+        gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.indices_buffer));
         gl.draw_elements_with_i32(GL::TRIANGLES, self.index_count, GL::UNSIGNED_SHORT, 0)
     }
 }

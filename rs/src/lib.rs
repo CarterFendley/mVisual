@@ -20,7 +20,7 @@ extern "C" {
 #[wasm_bindgen]
 pub struct MVisual {
     gl: WebGlRenderingContext,
-    programs: Vec<Box<dyn programs::common::Program>>,
+    programs: Vec<Box<dyn programs::Program>>,
 }
 
 #[wasm_bindgen]
@@ -32,6 +32,7 @@ impl MVisual {
 
         let mut programs: Vec<Box<dyn programs::common::Program>> = Vec::new();
         programs.push(Box::new(programs::Graph3D::new(&gl)));
+        programs.push(Box::new(programs::Sphere3D::new(&gl)));
 
         Self {
             gl: gl,

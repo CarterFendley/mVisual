@@ -1,23 +1,29 @@
 use std::f32::consts::PI;
 
-struct Sphere {
+pub struct Sphere {
     radius: f32,
-    v_sectors: u32,
-    h_sectors: u32,
-    vertices: Vec<f32>,
-    normals: Vec<f32>,
-    face_indices: Vec<u32>,
-    wireframe_indices: Vec<u32>,
+    v_sectors: u16,
+    h_sectors: u16,
+    pub vertices: Vec<f32>,
+    pub normals: Vec<f32>,
+    pub face_indices: Vec<u16>,
+    pub wireframe_indices: Vec<u16>,
 }
 
 impl Sphere {
-    pub fn new(radius: f32, resolution: u32) -> Self {
+    pub fn new(radius: f32, mut resolution: u16) -> Self {
         /*
-        The lower bound on the sectors bellow is based on the fact that the vertical sectors divide 180 degrees equally into each sector and horizontal ones do so with 360 degrees (see more in the recalculate method).
+        The lower bound on the sectors below is based on the fact that the vertical sectors divide 180 degrees equally into each sector and horizontal ones do so with 360 degrees (see more in the recalculate method).
 
         In 180 degrees of space you need at least 2 sectors to get anything but a flat surface. In 360 degrees of space you need at least 3 to get more than just a two sided feature.
         */
-        Self {
+
+        // Overflow protection
+        if resolution > u16::MAX - 3 {
+            resolution = u16::MAX - 3;
+        }
+
+        let mut value = Self {
             radius: radius,
             v_sectors: 2 + resolution,
             h_sectors: 3 + resolution,
@@ -25,7 +31,11 @@ impl Sphere {
             normals: Vec::new(),
             face_indices: Vec::new(),
             wireframe_indices: Vec::new()
-        }
+        };
+
+        value.recalculate();
+
+        return value;
     }
 
     // https://stackoverflow.com/a/969880/11325551

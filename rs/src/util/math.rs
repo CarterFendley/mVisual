@@ -1,3 +1,4 @@
+use super::constants::*;
 use nalgebra::Perspective3;
 
 pub fn get_3d_projection_matrix(
@@ -10,17 +11,6 @@ pub fn get_3d_projection_matrix(
     rotation_angle_x_axis: f32,
     rotation_angle_y_axis: f32,
 ) -> [f32; 16] {
-    const FIELD_OF_VIEW: f32 = 45. * std::f32::consts::PI / 180.; // In radians
-
-    // How far away and close do you stop rendering objects
-    const Z_FAR: f32 = 100.;
-    const Z_NEAR: f32 = 0.1;
-
-    /*
-     * How far the Z plane is away from you (based on the 45. deg FOV)
-     */
-    const Z_PLANE: f32 = -2.414213; // -1 / tan(pi /8)
-
     // Matrices to rotate the objects around x and y axises
     let rotate_x_axis: [f32; 16] = [
         1.,
@@ -62,7 +52,7 @@ pub fn get_3d_projection_matrix(
     // Pack the transformations together
     let rotation_matrix = mult_matrix_4(rotate_x_axis, rotate_y_axis);
 
-    let aspect_ratio: f32 = canvas_width / canvas_width;
+    let aspect_ratio: f32 = canvas_width / canvas_height;
     let scale_x = (right - left) / canvas_width;
     let scale_y = (top - bottom) / canvas_height;
     let scale_generic = scale_y;
