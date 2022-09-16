@@ -1,5 +1,6 @@
 use super::constants::*;
-use nalgebra::Perspective3;
+//use super::super::log;
+use nalgebra::{Matrix4,Perspective3};
 
 pub fn get_3d_projection_matrix(
     bottom: f32,
@@ -10,7 +11,7 @@ pub fn get_3d_projection_matrix(
     canvas_width: f32,
     rotation_angle_x_axis: f32,
     rotation_angle_y_axis: f32,
-) -> [f32; 16] {
+) -> Matrix4<f32> {
     // Matrices to rotate the objects around x and y axises
     let rotate_x_axis: [f32; 16] = [
         1.,
@@ -74,18 +75,32 @@ pub fn get_3d_projection_matrix(
     let scale_matrix: [f32; 16] = scale_matrix(scale_generic, scale_generic, 0.);
     let rotation_scale = mult_matrix_4(rotation_matrix, scale_matrix);
     let combined_transform = mult_matrix_4(rotation_scale, translation_matrix);
+    let mv = Matrix4::new(
+        combined_transform[0],
+        combined_transform[4],
+        combined_transform[8],
+        combined_transform[12],
+        combined_transform[1],
+        combined_transform[5],
+        combined_transform[9],
+        combined_transform[13],
+        combined_transform[2],
+        combined_transform[6],
+        combined_transform[10],
+        combined_transform[14],
+        combined_transform[3],
+        combined_transform[7],
+        combined_transform[11],
+        combined_transform[15],
+    );
 
     /*
      * This part gives it the "3D" feel
      */
-    let perspective_matrix_tmp: Perspective3<f32> =
+    let perspective: Perspective3<f32> =
         Perspective3::new(aspect_ratio, FIELD_OF_VIEW, Z_NEAR, Z_FAR);
 
-    // Get the resultant matrix from the calculation
-    let mut perspective: [f32; 16] = [0.; 16];
-    perspective.copy_from_slice(perspective_matrix_tmp.as_matrix().as_slice());
-
-    return mult_matrix_4(combined_transform, perspective);
+    return perspective.as_matrix() * mv;
 }
 
 /**

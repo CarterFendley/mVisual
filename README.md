@@ -25,6 +25,12 @@ yarn start
 - [WebGlRenderingContext docs](https://rustwasm.github.io/wasm-bindgen/api/web_sys/struct.WebGlRenderingContext.html#)
 - [nalgebra 0.18.0 docs](https://docs.rs/nalgebra/0.18.0/nalgebra/index.html)
 
+## Notes on rendering system
+
+The `render.js` will keep the canvas updated to take up the full screen size. The `canvas_height` and `canvas_width` are passed to the `update(...)` function and stored in the app state.
+
+The `update_dynamic_data(...)` method calculates the "display size" which is a smaller rectangle inside of the canvas which is used to scale elements so that when rotated properly they will leave some space between the side of the canvas window and the object.
+
 ## Notes current package setup
 
 ### Electron

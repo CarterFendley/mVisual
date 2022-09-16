@@ -26,7 +26,7 @@ pub fn update_dyanmic_data(time: f32, canvas_height: f32, canvas_width: f32) {
         control_bottom: half_canvas_height - half_display_size,
         control_top: half_canvas_height + half_display_size,
         control_left: half_canvas_width - half_display_size,
-        control_right: half_display_size + half_canvas_width,
+        control_right: half_canvas_width + half_display_size,
 
         time: time,
         ..*data.clone()

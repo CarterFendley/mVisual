@@ -31,7 +31,7 @@ impl MVisual {
         let gl = util::webgl::initialize_webgl_context().unwrap();
 
         let mut programs: Vec<Box<dyn programs::common::Program>> = Vec::new();
-        programs.push(Box::new(programs::Graph3D::new(&gl)));
+        // programs.push(Box::new(programs::Graph3D::new(&gl)));
         programs.push(Box::new(programs::Sphere3D::new(&gl)));
 
         Self {
@@ -53,14 +53,7 @@ impl MVisual {
         for program in self.programs.iter() {
             program.render(
                 &self.gl,
-                curr_state.control_bottom,
-                curr_state.control_top,
-                curr_state.control_left,
-                curr_state.control_right,
-                curr_state.canvas_height,
-                curr_state.canvas_width,
-                curr_state.rotation_x_axis,
-                curr_state.rotation_y_axis,
+                &curr_state,
             );
         }
     }

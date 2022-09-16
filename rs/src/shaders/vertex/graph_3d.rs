@@ -7,6 +7,7 @@ pub const SHADER: &str = r#"
   void main() {
     // 1.0 Helps the linear alg math work out
     gl_Position = uProjection * vec4(aPosition.x, 0.0, aPosition.z, 1.0);
+    gl_PointSize = 50.0;
     vColor = vec4(0.5, 0.5, 0.8, 1.0);
   }
 "#;

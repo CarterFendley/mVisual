@@ -1,14 +1,19 @@
 use super::super::util::math;
 use super::super::util::webgl;
 use super::super::util::constants::GRID_SIZE;
+//use super::super::log;
+use super::super::app_state::AppState;
 use super::common::Program;
 use js_sys::WebAssembly;
 use wasm_bindgen::JsCast;
 use web_sys::WebGlRenderingContext as GL;
 use web_sys::*;
 
+#[allow(dead_code)]
 pub struct Graph3D {
     pub program: WebGlProgram,
+    pub vertices: Vec<f32>,
+    pub indices: Vec<u16>,
     pub indices_buffer: WebGlBuffer,
     pub index_count: i32,
     pub position_buffer: WebGlBuffer,
@@ -16,6 +21,7 @@ pub struct Graph3D {
     pub u_projection: WebGlUniformLocation,
 }
 
+#[allow(dead_code)]
 impl Graph3D {
     pub fn new(gl: &WebGlRenderingContext) -> Self {
         let program = webgl::link_program(
@@ -62,6 +68,8 @@ impl Graph3D {
             u_opacity: gl.get_uniform_location(&program, "uOpacity").unwrap(),
             u_projection: gl.get_uniform_location(&program, "uProjection").unwrap(),
             program: program,
+            vertices: positions_and_indices.0,
+            indices: positions_and_indices.1,
             indices_buffer: buffer_indices,
             index_count: indices_array.length() as i32,
             position_buffer: buffer_position,
@@ -73,35 +81,34 @@ impl Program for Graph3D {
     fn render(
         &self,
         gl: &WebGlRenderingContext,
-        bottom: f32,
-        top: f32,
-        left: f32,
-        right: f32,
-        canvas_height: f32,
-        canvas_width: f32,
-        rotation_angle_x_axis: f32,
-        rotation_angle_y_axis: f32,
+        app_state: &AppState,
     ) {
         gl.use_program(Some(&self.program));
 
         // The name projection is odd to me as we have multiple matrices being returned not just the projection one.
         let projection_matrix = math::get_3d_projection_matrix(
-            bottom,
-            top,
-            left,
-            right,
-            canvas_height,
-            canvas_width,
-            rotation_angle_x_axis,
-            rotation_angle_y_axis,
+            app_state.control_bottom,
+            app_state.control_top,
+            app_state.control_left,
+            app_state.control_right,
+            app_state.canvas_height,
+            app_state.canvas_width,
+            app_state.rotation_x_axis,
+            app_state.rotation_y_axis,
         );
 
-        gl.uniform_matrix4fv_with_f32_array(Some(&self.u_projection), false, &projection_matrix);
+        gl.uniform_matrix4fv_with_f32_array(Some(&self.u_projection), false, &projection_matrix.as_slice());
         gl.uniform1f(Some(&self.u_opacity), 1.);
 
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.position_buffer));
         gl.vertex_attrib_pointer_with_i32(0, 3, GL::FLOAT, false, 0, 0);
         gl.enable_vertex_attrib_array(0);
+
+        /*
+        // For debugging to add a visual indicator of a specific point
+        gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.indices_buffer));
+        gl.draw_elements_with_i32(GL::POINTS, 1, GL::UNSIGNED_SHORT, 0);
+        */
 
         gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.indices_buffer));
         gl.draw_elements_with_i32(GL::TRIANGLES, self.index_count, GL::UNSIGNED_SHORT, 0)
