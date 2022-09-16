@@ -1,5 +1,7 @@
 # mVisual
 
+[![Rust Build](https://github.com/CarterFendley/mVisual/actions/workflows/rust.yml/badge.svg)](https://github.com/CarterFendley/mVisual/actions/workflows/rust.yml)
+
 ## Setup
 
 First step is to [install rust](https://www.rust-lang.org/) and to install the webassembly target with the command below.
