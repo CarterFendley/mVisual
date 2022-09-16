@@ -7,6 +7,7 @@
 
 import rust from "../pkg/m_visual"
 
+// @ts-ignore
 rust.then(m => {
   const canvas = document.getElementById('rustCanvas') as HTMLCanvasElement;
   const gl = canvas.getContext('webgl', { antialias: true });
