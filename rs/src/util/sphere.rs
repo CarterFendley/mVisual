@@ -68,7 +68,7 @@ impl Sphere {
             for h in 0..(self.h_sectors + 1) {
                 let h_angle = h as f32 * h_spacing;
 
-                let x = hypot * h_angle.sin();
+                let x = hypot * h_angle.cos();
                 let y = hypot * h_angle.sin();
                 self.vertices.push(x);
                 self.vertices.push(y);
