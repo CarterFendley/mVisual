@@ -15,6 +15,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
+    # Seems that webpack plugin has an issue with this on the GitHub servers
+    - name: Get wasm-pack
+      run:  curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
     - name: Install
       run: yarn
     - name: Build
