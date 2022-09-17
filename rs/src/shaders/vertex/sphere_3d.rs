@@ -26,8 +26,14 @@ pub const SHADER: &str = r#"
         // Calculate the final position
         gl_Position = uModelViewProjection * vec4(aVertexPosition, 1.0);
 
-        // Calculate the color
-        vec3 transformedNormal = normalize(vec3(uModelView * vec4(aVertexNormal, 1.0)));
+        /*
+        Calculate the color
+
+        The 0.0 in `transformedNormal` is important to not apply any of the translations from the model + view transformations. See the "One last thing" section of this page: https://learnopengl.com/Lighting/Basic-Lighting
+
+        That page also notes if, in the future there is a non-uniform scalling applied (scales x,y, or z differently than the others), it will become an issue and require us to no longer use the MV for transforming normals.
+        */
+        vec3 transformedNormal = normalize(vec3(uModelView * vec4(aVertexNormal, 0.0)));
         vec3 diffuseNormal = normalize(uDiffuseLightPosition.xyz);
         float flooredDotProduct = max(dot(transformedNormal, diffuseNormal), 0.0);
 
