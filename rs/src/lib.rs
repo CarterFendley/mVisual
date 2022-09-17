@@ -32,7 +32,7 @@ impl MVisual {
 
         let mut programs: Vec<Box<dyn programs::common::Program>> = Vec::new();
         // programs.push(Box::new(programs::Graph3D::new(&gl)));
-        programs.push(Box::new(programs::Sphere3D::new(&gl)));
+        programs.push(Box::new(programs::Sphere3D::new(&gl, false)));
 
         Self {
             gl: gl,

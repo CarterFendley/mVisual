@@ -33,17 +33,19 @@ pub struct Sphere3D {
   len_wireframe_indices: i32,
   _buf_face_indices: WebGlBuffer,
   _len_face_indices: i32,
+  // Settings
+  wireframe: bool,
 }
 
 impl Sphere3D {
-  pub fn new(gl: &WebGlRenderingContext) -> Self {
+  pub fn new(gl: &WebGlRenderingContext, wireframe: bool) -> Self {
     let program = webgl::link_program(
       &gl,
       &super::super::shaders::vertex::sphere_3d::SHADER,
       &super::super::shaders::fragment::vary_color_from_vertex::SHADER,
     ).unwrap();
 
-    let sphere = Sphere::new(0.5, 20);
+    let sphere = Sphere::new(0.5, 30);
     let model_matrix = Matrix4::new_scaling(1.);
 
     // Build view and invert
@@ -149,7 +151,9 @@ impl Sphere3D {
       buf_wireframe_indices: widx_gpu_buffer,
       len_wireframe_indices: widx_js_array.length() as i32,
       _buf_face_indices: fidx_gpu_buffer,
-      _len_face_indices: fidx_js_array.length() as i32
+      _len_face_indices: fidx_js_array.length() as i32,
+      // Settings
+      wireframe: wireframe
     }
   }
 }
@@ -185,7 +189,7 @@ impl Program for Sphere3D {
 
     // Universal settings
     gl.uniform3f(Some(&self.u_diff_light_color), 1., 1., 1.); // White
-    gl.uniform3f(Some(&self.u_diff_light_pos), -0.85, 0.8, 0.75); // Above left shoulder
+    gl.uniform3f(Some(&self.u_diff_light_pos), -0.5, 0.5, 0.75); // Above left shoulder
     gl.uniform1f(Some(&self.u_opacity), 1.);
 
     // Color settings for face drawing
@@ -209,28 +213,30 @@ impl Program for Sphere3D {
     gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self._buf_face_indices));
     gl.draw_elements_with_i32(GL::TRIANGLES, self._len_face_indices, GL::UNSIGNED_SHORT, 0);
 
-    // Set color settings for wireframe
-    gl.uniform3f(Some(&self.u_amb_light_color), 1., 1., 1.); // White
-    gl.uniform3f(Some(&self.u_material_color), 0.5, 0.8, 0.5); // Green-ish
+    if self.wireframe {
+      // Set color settings for wireframe
+      gl.uniform3f(Some(&self.u_amb_light_color), 1., 1., 1.); // White
+      gl.uniform3f(Some(&self.u_material_color), 0.5, 0.8, 0.5); // Green-ish
 
-    // Make wire frame a little above to precent z-fighting
-    let wire_model_transform = solid_model_transform * Matrix4::new_scaling(1.001);
+      // Make wire frame a little above to precent z-fighting
+      let wire_model_transform = solid_model_transform * Matrix4::new_scaling(1.001);
 
-    // Load new MV and MVP transforms based on the scaling
-    let mut mv_matrix = self.view_transform * wire_model_transform;
-    gl.uniform_matrix4fv_with_f32_array(
-      Some(&self.u_mv_transform),
-      false,
-      mv_matrix.as_slice()
-    );
-    gl.uniform_matrix4fv_with_f32_array(
-      Some(&self.u_mvp_transform),
-      false,
-      (projection_matrix.as_matrix() * mv_matrix).as_slice()
-    );
+      // Load new MV and MVP transforms based on the scaling
+      let mut mv_matrix = self.view_transform * wire_model_transform;
+      gl.uniform_matrix4fv_with_f32_array(
+        Some(&self.u_mv_transform),
+        false,
+        mv_matrix.as_slice()
+      );
+      gl.uniform_matrix4fv_with_f32_array(
+        Some(&self.u_mvp_transform),
+        false,
+        (projection_matrix.as_matrix() * mv_matrix).as_slice()
+      );
 
-    // Draw wireframe
-    gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.buf_wireframe_indices));
-    gl.draw_elements_with_i32(GL::LINES, self.len_wireframe_indices, GL::UNSIGNED_SHORT, 0);
+      // Draw wireframe
+      gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.buf_wireframe_indices));
+      gl.draw_elements_with_i32(GL::LINES, self.len_wireframe_indices, GL::UNSIGNED_SHORT, 0);
+    }
   }
 }

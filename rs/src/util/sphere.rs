@@ -116,7 +116,7 @@ impl Sphere {
                 
                 /*
                 On row 0, the points are all the same (there is only one point at the top of the cirlce). But to keep our array balanced, and logic clean, we still have `h_sectors` entries for row 0. We can think of each sector as a triangle in this row.
-                
+
                 Row 0:    *     *
                          / \   / \
                         /   \ /   \
