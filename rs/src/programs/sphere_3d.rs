@@ -164,7 +164,6 @@ impl Program for Sphere3D {
     let new_model_transform = self.model_transform * Matrix4::new_rotation(
       Vector3::new(0., 0., app_state.time / 1500.)
     );
-    let mv_matrix = self.view_transform * new_model_transform;
 
     let aspect_ratio = app_state.canvas_width / app_state.canvas_height;
     let projection_matrix = Perspective3::new(
@@ -175,13 +174,26 @@ impl Program for Sphere3D {
     );
     gl.use_program(Some(&self.program));
 
-    // Load uniforms
-    gl.uniform3f(Some(&self.u_amb_light_color), 0.2, 0.2, 0.2); // Dim white
+    // Load verticies & normals
+    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buf_vertex_position));
+    gl.enable_vertex_attrib_array(self.a_vertex_position);
+    gl.vertex_attrib_pointer_with_i32(self.a_vertex_position, 3, GL::FLOAT, false, 0, 0);
+
+    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buf_vertex_normal));
+    gl.enable_vertex_attrib_array(self.a_vertex_normal);
+    gl.vertex_attrib_pointer_with_i32(self.a_vertex_normal, 3, GL::FLOAT, false, 0, 0);
+
+    // Universal settings
     gl.uniform3f(Some(&self.u_diff_light_color), 1., 1., 1.); // White
     gl.uniform3f(Some(&self.u_diff_light_pos), -0.85, 0.8, 0.75); // Above left shoulder
-    gl.uniform3f(Some(&self.u_material_color), 0.5, 0.5, 0.8); // Blue-ish
     gl.uniform1f(Some(&self.u_opacity), 1.);
 
+    // Color settings for face drawing
+    gl.uniform3f(Some(&self.u_amb_light_color), 0.2, 0.2, 0.2); // Dim white
+    gl.uniform3f(Some(&self.u_material_color), 0.5, 0.5, 0.8); // Blue-ish
+
+    // Load transformations for faces
+    let mut mv_matrix = self.view_transform * new_model_transform;
     gl.uniform_matrix4fv_with_f32_array(
       Some(&self.u_mv_transform),
       false,
@@ -193,24 +205,16 @@ impl Program for Sphere3D {
       (projection_matrix.as_matrix() * mv_matrix).as_slice()
     );
 
-    // Attach buffers to attributes
-    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buf_vertex_position));
-    gl.enable_vertex_attrib_array(self.a_vertex_position);
-    gl.vertex_attrib_pointer_with_i32(self.a_vertex_position, 3, GL::FLOAT, false, 0, 0);
+    // Draw faces
+    gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self._buf_face_indices));
+    gl.draw_elements_with_i32(GL::TRIANGLES, self._len_face_indices, GL::UNSIGNED_SHORT, 0);
 
-    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buf_vertex_normal));
-    gl.enable_vertex_attrib_array(self.a_vertex_normal);
-    gl.vertex_attrib_pointer_with_i32(self.a_vertex_normal, 3, GL::FLOAT, false, 0, 0);
+    // Set color settings for wireframe
+    gl.uniform3f(Some(&self.u_amb_light_color), 1., 1., 1.); // White
+    gl.uniform3f(Some(&self.u_material_color), 0.5, 0.8, 0.5); // Green-ish
 
     // Draw wireframe
-    gl.line_width(0.5);
     gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.buf_wireframe_indices));
     gl.draw_elements_with_i32(GL::LINES, self.len_wireframe_indices, GL::UNSIGNED_SHORT, 0);
-
-    /*
-    // Draw faces
-    gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.buf_face_indices));
-    gl.draw_elements_with_i32(GL::TRIANGLES, self.len_face_indices, GL::UNSIGNED_SHORT, 0);
-    */
   }
 }
