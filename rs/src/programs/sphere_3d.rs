@@ -222,7 +222,7 @@ impl Program for Sphere3D {
       let wire_model_transform = solid_model_transform * Matrix4::new_scaling(1.001);
 
       // Load new MV and MVP transforms based on the scaling
-      let mut mv_matrix = self.view_transform * wire_model_transform;
+      mv_matrix = self.view_transform * wire_model_transform;
       gl.uniform_matrix4fv_with_f32_array(
         Some(&self.u_mv_transform),
         false,
