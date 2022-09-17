@@ -25,7 +25,7 @@ yarn start
 ## Helpful references
 
 - [WebGlRenderingContext docs](https://rustwasm.github.io/wasm-bindgen/api/web_sys/struct.WebGlRenderingContext.html#)
-- [nalgebra 0.18.0 docs](https://docs.rs/nalgebra/0.18.0/nalgebra/index.html)
+- [nalgebra 0.27.1 docs](https://docs.rs/nalgebra/0.27.1/nalgebra/index.html)
 
 ## Notes on rendering system
 
