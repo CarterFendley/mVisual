@@ -15,9 +15,18 @@ pub fn initialize_webgl_context() -> Result<WebGlRenderingContext, JsValue> {
     attach_mouse_up_handler(&canvas)?;
     attach_mouse_move_handler(&canvas)?;
 
-    // Allow things to be transparent (for fading in and out)
-    gl.enable(GL::BLEND);
-    gl.blend_func(GL::SRC_ALPHA, GL::ONE_MINUS_SRC_ALPHA);
+    /*
+    The following will enable culling of faces that are pointed away the camera (must be defined counter clockwise)
+    */
+    gl.enable(GL::CULL_FACE);
+
+    /*
+    This will use the z value to deteremine which shapes should be shown or not depending if there is an object in front of them or not.
+
+    https://learnopengl.com/Advanced-OpenGL/Depth-testing
+    https://stackoverflow.com/a/43567650/11325551
+    */
+    gl.enable(GL::DEPTH_TEST);
 
     // What color should it set when it needs to erase something
     gl.clear_color(0.0, 0.0, 0.0, 1.0); //RGBA

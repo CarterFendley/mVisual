@@ -161,7 +161,7 @@ impl Program for Sphere3D {
     app_state: &AppState
   ) {
     // Calculate current transformations
-    let new_model_transform = self.model_transform * Matrix4::new_rotation(
+    let solid_model_transform = self.model_transform * Matrix4::new_rotation(
       Vector3::new(0., 0., app_state.time / 1500.)
     );
 
@@ -193,7 +193,7 @@ impl Program for Sphere3D {
     gl.uniform3f(Some(&self.u_material_color), 0.5, 0.5, 0.8); // Blue-ish
 
     // Load transformations for faces
-    let mut mv_matrix = self.view_transform * new_model_transform;
+    let mut mv_matrix = self.view_transform * solid_model_transform;
     gl.uniform_matrix4fv_with_f32_array(
       Some(&self.u_mv_transform),
       false,
@@ -212,6 +212,22 @@ impl Program for Sphere3D {
     // Set color settings for wireframe
     gl.uniform3f(Some(&self.u_amb_light_color), 1., 1., 1.); // White
     gl.uniform3f(Some(&self.u_material_color), 0.5, 0.8, 0.5); // Green-ish
+
+    // Make wire frame a little above to precent z-fighting
+    let wire_model_transform = solid_model_transform * Matrix4::new_scaling(1.001);
+
+    // Load new MV and MVP transforms based on the scaling
+    let mut mv_matrix = self.view_transform * wire_model_transform;
+    gl.uniform_matrix4fv_with_f32_array(
+      Some(&self.u_mv_transform),
+      false,
+      mv_matrix.as_slice()
+    );
+    gl.uniform_matrix4fv_with_f32_array(
+      Some(&self.u_mvp_transform),
+      false,
+      (projection_matrix.as_matrix() * mv_matrix).as_slice()
+    );
 
     // Draw wireframe
     gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.buf_wireframe_indices));
