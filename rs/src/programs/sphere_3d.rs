@@ -1,6 +1,7 @@
 use super::super::util::Sphere;
 use super::super::util::constants::*;
 use super::super::util::webgl;
+use super::super::util::wasm::*;
 //use super::super::log;
 use super::super::app_state::AppState;
 use super::common::Program;
@@ -62,6 +63,9 @@ impl Sphere3D {
     //log(&format!("Verticies: {}  Normals: {} Indices: {}", sphere.vertices.len(), sphere.normals.len(), sphere.wireframe_indices.len()));
 
     // Buffer any data that will remain unchaged
+    let vertex_gpu_buffer = fill_new_buffer(&gl, &sphere.vertices);
+
+    /*
     let vertex_wasm_memory = wasm_bindgen::memory()
       .dyn_into::<WebAssembly::Memory>()
       .unwrap()
@@ -77,7 +81,7 @@ impl Sphere3D {
       GL::ARRAY_BUFFER,
       &vertex_js_array,
       GL::STATIC_DRAW,
-    );
+    );*/
 
     let normals_wasm_memory = wasm_bindgen::memory()
       .dyn_into::<WebAssembly::Memory>()
