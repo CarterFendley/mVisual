@@ -1,4 +1,4 @@
-use super::super::app_state::AppState;
+use crate::app_state::AppState;
 use web_sys::WebGlRenderingContext;
 
 

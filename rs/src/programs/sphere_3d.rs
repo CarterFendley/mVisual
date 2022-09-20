@@ -1,9 +1,9 @@
-use super::super::util::Sphere;
-use super::super::util::constants::*;
-use super::super::util::webgl;
-use super::super::util::wasm::*;
-//use super::super::log;
-use super::super::app_state::AppState;
+use crate::util::Sphere;
+use crate::util::constants::*;
+use crate::util::webgl;
+use crate::util::wasm::*;
+//use crate::log;
+use crate::app_state::AppState;
 use super::common::Program;
 use web_sys::WebGlRenderingContext as GL;
 use web_sys::*;
@@ -40,8 +40,8 @@ impl Sphere3D {
   pub fn new(gl: &WebGlRenderingContext, wireframe: bool) -> Self {
     let program = webgl::link_program(
       &gl,
-      &super::super::shaders::vertex::sphere_3d::SHADER,
-      &super::super::shaders::fragment::vary_color_from_vertex::SHADER,
+      &crate::shaders::vertex::sphere_3d::SHADER,
+      &crate::shaders::fragment::vary_color_from_vertex::SHADER,
     ).unwrap();
 
     let sphere = Sphere::new(0.5, 30);

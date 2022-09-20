@@ -93,7 +93,7 @@ fn compile_shader(
 
 fn attach_mouse_down_handler(canvas: &HtmlCanvasElement) -> Result<(), JsValue> {
     let handler = move |event: web_sys::MouseEvent| {
-        super::super::app_state::update_mouse_down(
+        crate::app_state::update_mouse_down(
             event.client_x() as f32,
             event.client_y() as f32,
             true,
@@ -117,7 +117,7 @@ fn attach_mouse_down_handler(canvas: &HtmlCanvasElement) -> Result<(), JsValue> 
 
 fn attach_mouse_up_handler(canvas: &HtmlCanvasElement) -> Result<(), JsValue> {
     let handler = move |event: web_sys::MouseEvent| {
-        super::super::app_state::update_mouse_down(
+        crate::app_state::update_mouse_down(
             event.client_x() as f32,
             event.client_y() as f32,
             false,
@@ -141,7 +141,7 @@ fn attach_mouse_up_handler(canvas: &HtmlCanvasElement) -> Result<(), JsValue> {
 
 fn attach_mouse_move_handler(canvas: &HtmlCanvasElement) -> Result<(), JsValue> {
     let handler = move |event: web_sys::MouseEvent| {
-        super::super::app_state::update_mouse_position(
+        crate::app_state::update_mouse_position(
             event.client_x() as f32,
             event.client_y() as f32,
         );

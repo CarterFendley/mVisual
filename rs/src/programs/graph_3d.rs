@@ -1,8 +1,8 @@
-use super::super::util::math;
-use super::super::util::webgl;
-use super::super::util::constants::GRID_SIZE;
-//use super::super::log;
-use super::super::app_state::AppState;
+use crate::util::math;
+use crate::util::webgl;
+use crate::util::constants::GRID_SIZE;
+//use crate::log;
+use crate::app_state::AppState;
 use super::common::Program;
 use js_sys::WebAssembly;
 use wasm_bindgen::JsCast;
@@ -26,8 +26,8 @@ impl Graph3D {
     pub fn new(gl: &WebGlRenderingContext) -> Self {
         let program = webgl::link_program(
             &gl,
-            &super::super::shaders::vertex::graph_3d::SHADER,
-            &super::super::shaders::fragment::vary_color_from_vertex::SHADER,
+            &crate::shaders::vertex::graph_3d::SHADER,
+            &crate::shaders::fragment::vary_color_from_vertex::SHADER,
         )
         .unwrap();
 
