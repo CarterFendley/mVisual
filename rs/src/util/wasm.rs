@@ -1,9 +1,17 @@
-
 use js_sys::{WebAssembly,Object};
 use wasm_bindgen::JsCast;
 use web_sys::*;
 
-pub fn fill_new_buffer<T: 'static>(gl: &WebGlRenderingContext, target: u32, vector: &Vec<T>, usage: u32) -> WebGlBuffer {
+/*
+This is the "tag trait" idiom, see here: https://stackoverflow.com/a/72523533/11325551
+*/
+
+pub trait SupportedTypes {}
+
+impl SupportedTypes for u16 {}
+impl SupportedTypes for f32 {}
+
+pub fn fill_new_buffer<T: SupportedTypes + 'static>(gl: &WebGlRenderingContext, target: u32, vector: &Vec<T>, usage: u32) -> WebGlBuffer {
   let buffer = gl.create_buffer().ok_or("Failed to create buffer").unwrap();
 
   // Get location of data as an index
