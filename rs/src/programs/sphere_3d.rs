@@ -5,8 +5,6 @@ use super::super::util::wasm::*;
 //use super::super::log;
 use super::super::app_state::AppState;
 use super::common::Program;
-use js_sys::WebAssembly;
-use wasm_bindgen::JsCast;
 use web_sys::WebGlRenderingContext as GL;
 use web_sys::*;
 use nalgebra::{Perspective3, Matrix4, Vector3};
@@ -63,74 +61,29 @@ impl Sphere3D {
     //log(&format!("Verticies: {}  Normals: {} Indices: {}", sphere.vertices.len(), sphere.normals.len(), sphere.wireframe_indices.len()));
 
     // Buffer any data that will remain unchaged
-    let vertex_gpu_buffer = fill_new_buffer(&gl, &sphere.vertices);
-
-    /*
-    let vertex_wasm_memory = wasm_bindgen::memory()
-      .dyn_into::<WebAssembly::Memory>()
-      .unwrap()
-      .buffer();
-    let vertex_location = sphere.vertices.as_ptr() as u32 / 4;
-    let vertex_js_array = js_sys::Float32Array::new(&vertex_wasm_memory).subarray(
-      vertex_location,
-      vertex_location + sphere.vertices.len() as u32
-    );
-    let vertex_gpu_buffer = gl.create_buffer().ok_or("Failed to create buffer").unwrap();
-    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_gpu_buffer));
-    gl.buffer_data_with_array_buffer_view(
+    let vertex_gpu_buffer = fill_new_buffer(
+      &gl,
       GL::ARRAY_BUFFER,
-      &vertex_js_array,
-      GL::STATIC_DRAW,
-    );*/
-
-    let normals_wasm_memory = wasm_bindgen::memory()
-      .dyn_into::<WebAssembly::Memory>()
-      .unwrap()
-      .buffer();
-    let normals_location = sphere.normals.as_ptr() as u32 / 4;
-    let normals_js_array = js_sys::Float32Array::new(&normals_wasm_memory).subarray(
-      normals_location,
-      normals_location + sphere.normals.len() as u32
+      &sphere.vertices,
+      GL::STATIC_DRAW
     );
-    let normals_gpu_buffer = gl.create_buffer().ok_or("Failed to create buffer").unwrap();
-    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&normals_gpu_buffer));
-    gl.buffer_data_with_array_buffer_view(
+    let normals_gpu_buffer = fill_new_buffer(
+      &gl,
       GL::ARRAY_BUFFER,
-      &normals_js_array,
+      &sphere.normals,
       GL::STATIC_DRAW
     );
 
-    let widx_wasm_memory = wasm_bindgen::memory()
-      .dyn_into::<WebAssembly::Memory>()
-      .unwrap()
-      .buffer();
-    let widx_location = sphere.wireframe_indices.as_ptr() as u32 / 2;
-    let widx_js_array = js_sys::Uint16Array::new(&widx_wasm_memory).subarray(
-      widx_location,
-      widx_location + sphere.wireframe_indices.len() as u32
-    );
-    let widx_gpu_buffer = gl.create_buffer().ok_or("Failed to create buffer").unwrap();
-    gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&widx_gpu_buffer));
-    gl.buffer_data_with_array_buffer_view(
+    let widx_gpu_buffer = fill_new_buffer(
+      &gl,
       GL::ELEMENT_ARRAY_BUFFER,
-      &widx_js_array,
+      &sphere.wireframe_indices,
       GL::STATIC_DRAW
     );
-
-    let fidx_wasm_memory = wasm_bindgen::memory()
-      .dyn_into::<WebAssembly::Memory>()
-      .unwrap()
-      .buffer();
-    let fidx_location = sphere.face_indices.as_ptr() as u32 / 2;
-    let fidx_js_array = js_sys::Uint16Array::new(&fidx_wasm_memory).subarray(
-      fidx_location,
-      fidx_location + sphere.face_indices.len() as u32
-    );
-    let fidx_gpu_buffer = gl.create_buffer().ok_or("Failed to create buffer").unwrap();
-    gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&fidx_gpu_buffer));
-    gl.buffer_data_with_array_buffer_view(
+    let fidx_gpu_buffer = fill_new_buffer(
+      &gl,
       GL::ELEMENT_ARRAY_BUFFER,
-      &fidx_js_array,
+      &sphere.face_indices,
       GL::STATIC_DRAW
     );
 
@@ -147,17 +100,18 @@ impl Sphere3D {
       a_vertex_normal: gl.get_attrib_location(&program, "aVertexNormal") as u32,
       // Transfer program owner ship and finish
       program: program,
-      _sphere: sphere,
       model_transform: model_matrix,
       view_transform: view_matrix,
       buf_vertex_position: vertex_gpu_buffer,
       buf_vertex_normal: normals_gpu_buffer,
       buf_wireframe_indices: widx_gpu_buffer,
-      len_wireframe_indices: widx_js_array.length() as i32,
+      len_wireframe_indices: sphere.wireframe_indices.len() as i32,
       _buf_face_indices: fidx_gpu_buffer,
-      _len_face_indices: fidx_js_array.length() as i32,
+      _len_face_indices: sphere.face_indices.len() as i32,
       // Settings
-      wireframe: wireframe
+      wireframe: wireframe,
+      // Data
+      _sphere: sphere,
     }
   }
 }
